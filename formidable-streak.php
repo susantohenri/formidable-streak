@@ -26,6 +26,7 @@ define('FORMIDABLE_STREAK_USER_META_LAST_STREAK', 'user_streak_last');
 define('FORMIDABLE_STREAK_USER_META_BEST_STREAK', 'user_streak_longest');
 define('FORMIDABLE_STREAK_USER_META_STREAK_10', 'achieved_streak_of_10');
 define('FORMIDABLE_STREAK_USER_META_STREAK_100', 'achieved_streak_of_100');
+define('FORMIDABLE_STREAK_USER_META_FIRST_DAY_LAST_STREAK', 'user_streak_first_day');
 
 add_shortcode('formidable-streak-last', function () {
     $user_meta = get_user_meta(get_current_user_id(), FORMIDABLE_STREAK_USER_META_LAST_STREAK);
@@ -171,4 +172,7 @@ function formidable_streak_calculate($entry_id, $form_id)
 
     // UPDATE ACHIEVED-100
     if (100 === (int)$last_streak) update_user_meta((int)$submitted_streak->user_id, FORMIDABLE_STREAK_USER_META_STREAK_100, 'Achieved');
+
+    // UPDATE FIRST DAY OF LAST STREAK
+    update_user_meta((int)$submitted_streak->user_id, FORMIDABLE_STREAK_USER_META_FIRST_DAY_LAST_STREAK, $day->format('Y-m-d'));
 }
