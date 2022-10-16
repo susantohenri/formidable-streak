@@ -100,6 +100,21 @@ add_action('admin_menu', function () {
                                 </div>
                             </div>
                         </div>
+                        <div class="meta-box-sortables">
+                            <div id="" class="postbox">
+                                <div class="postbox-header">
+                                    <h2 class="hndle ui-sortable-handle">
+                                        <span>Streak Views Filter Helper</span>
+                                    </h2>
+                                </div>
+                                <div class="inside">
+                                    <ol>
+                                        <li>User ID >> is equal to >> current_user</li>
+                                        <li>And >> Date >> is greater than or equal to >> [user_meta key=user_streak_first_day]</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
