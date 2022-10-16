@@ -22,8 +22,10 @@
 
 define('FORMIDABLE_STREAK_OPTION_GROUP', 'FORMIDABLE_STREAK_OPTION_GROUP');
 define('FORMIDABLE_STREAK_FIELD_ID', 'FORMIDABLE_STREAK_FIELD_ID');
-define('FORMIDABLE_STREAK_USER_META_LAST_STREAK', 'FORMIDABLE_STREAK_USER_META_LAST_STREAK');
-define('FORMIDABLE_STREAK_USER_META_BEST_STREAK', 'FORMIDABLE_STREAK_USER_META_BEST_STREAK');
+define('FORMIDABLE_STREAK_USER_META_LAST_STREAK', 'user_streak_last');
+define('FORMIDABLE_STREAK_USER_META_BEST_STREAK', 'user_streak_longest');
+define('FORMIDABLE_STREAK_USER_META_STREAK_10', 'achieved_streak_of_10');
+define('FORMIDABLE_STREAK_USER_META_STREAK_100', 'achieved_streak_of_100');
 
 add_shortcode('formidable-streak-last', function () {
     $user_meta = get_user_meta(get_current_user_id(), FORMIDABLE_STREAK_USER_META_LAST_STREAK);
@@ -33,6 +35,16 @@ add_shortcode('formidable-streak-last', function () {
 add_shortcode('formidable-streak-best', function () {
     $user_meta = get_user_meta(get_current_user_id(), FORMIDABLE_STREAK_USER_META_BEST_STREAK);
     return isset($user_meta[0]) ? $user_meta[0] : 0;
+});
+
+add_shortcode('formidable-streak-achieved-10', function () {
+    $user_meta = get_user_meta(get_current_user_id(), FORMIDABLE_STREAK_USER_META_STREAK_10);
+    return isset($user_meta[0]) ? $user_meta[0] : 'Not achieved yet';
+});
+
+add_shortcode('formidable-streak-achieved-100', function () {
+    $user_meta = get_user_meta(get_current_user_id(), FORMIDABLE_STREAK_USER_META_STREAK_100);
+    return isset($user_meta[0]) ? $user_meta[0] : 'Not achieved yet';
 });
 
 add_action('admin_menu', function () {
@@ -66,6 +78,24 @@ add_action('admin_menu', function () {
                                             <?php submit_button(); ?>
                                             <br class="clear">
                                         </p>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="meta-box-sortables">
+                            <div id="" class="postbox">
+                                <div class="postbox-header">
+                                    <h2 class="hndle ui-sortable-handle">
+                                        <span>Available Shortcodes</span>
+                                    </h2>
+                                </div>
+                                <div class="inside">
+                                    <ol>
+                                        <li>[formidable-streak-last][/formidable-streak-last]</li>
+                                        <li>[formidable-streak-best][/formidable-streak-best</li>
+                                        <li>[formidable-streak-achieved-10][/formidable-streak-achieved-10]</li>
+                                        <li>[formidable-streak-achieved-100][/formidable-streak-achieved-100]</li>
+                                    </ol>
                                 </div>
                             </div>
                         </div>
@@ -135,4 +165,10 @@ function formidable_streak_calculate($entry_id, $form_id)
     $best_streak = get_user_meta((int)$submitted_streak->user_id, FORMIDABLE_STREAK_USER_META_BEST_STREAK);
     $best_streak = isset($best_streak[0]) ? $best_streak[0] : 0;
     if ((int) $last_streak >= (int) $best_streak) update_user_meta((int)$submitted_streak->user_id, FORMIDABLE_STREAK_USER_META_BEST_STREAK, $last_streak);
+
+    // UPDATE ACHIEVED-10
+    if (10 === (int)$last_streak) update_user_meta((int)$submitted_streak->user_id, FORMIDABLE_STREAK_USER_META_STREAK_10, 'Achieved');
+
+    // UPDATE ACHIEVED-100
+    if (100 === (int)$last_streak) update_user_meta((int)$submitted_streak->user_id, FORMIDABLE_STREAK_USER_META_STREAK_100, 'Achieved');
 }
