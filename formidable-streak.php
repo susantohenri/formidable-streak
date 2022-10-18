@@ -20,115 +20,30 @@
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
  */
 
-define('FORMIDABLE_STREAK_OPTION_GROUP', 'FORMIDABLE_STREAK_OPTION_GROUP');
-define('FORMIDABLE_STREAK_FIELD_ID', 'FORMIDABLE_STREAK_FIELD_ID');
-define('FORMIDABLE_STREAK_USER_META_LAST_STREAK', 'user_streak_last');
-define('FORMIDABLE_STREAK_USER_META_BEST_STREAK', 'user_streak_longest');
-define('FORMIDABLE_STREAK_USER_META_STREAK_10', 'achieved_streak_of_10');
-define('FORMIDABLE_STREAK_USER_META_STREAK_100', 'achieved_streak_of_100');
-define('FORMIDABLE_STREAK_USER_META_FIRST_DAY_LAST_STREAK', 'user_streak_first_day');
+// replace 999 with date field id
 
-add_shortcode('formidable-streak-last', function () {
-    $user_meta = get_user_meta(get_current_user_id(), FORMIDABLE_STREAK_USER_META_LAST_STREAK);
+add_shortcode('formidable-streak-last-999', function () {
+    $user_meta = get_user_meta(get_current_user_id(), "ENTRY_USER_META_LAST_STREAK_999");
     return isset($user_meta[0]) ? $user_meta[0] : 0;
 });
 
-add_shortcode('formidable-streak-best', function () {
-    $user_meta = get_user_meta(get_current_user_id(), FORMIDABLE_STREAK_USER_META_BEST_STREAK);
+add_shortcode('formidable-streak-best-999', function () {
+    $user_meta = get_user_meta(get_current_user_id(), "ENTRY_USER_META_BEST_STREAK_999");
     return isset($user_meta[0]) ? $user_meta[0] : 0;
 });
 
-add_shortcode('formidable-streak-achieved-10', function () {
-    $user_meta = get_user_meta(get_current_user_id(), FORMIDABLE_STREAK_USER_META_STREAK_10);
+add_shortcode('formidable-streak-achieved-10-999', function () {
+    $user_meta = get_user_meta(get_current_user_id(), "ENTRY_USER_META_STREAK_10_999");
     return isset($user_meta[0]) ? $user_meta[0] : 'Not achieved yet';
 });
 
-add_shortcode('formidable-streak-achieved-100', function () {
-    $user_meta = get_user_meta(get_current_user_id(), FORMIDABLE_STREAK_USER_META_STREAK_100);
+add_shortcode('formidable-streak-achieved-100-999', function () {
+    $user_meta = get_user_meta(get_current_user_id(), "ENTRY_USER_META_STREAK_100_999");
     return isset($user_meta[0]) ? $user_meta[0] : 'Not achieved yet';
 });
 
-add_action('admin_menu', function () {
-    add_action('admin_init', function () {
-        register_setting(FORMIDABLE_STREAK_OPTION_GROUP, FORMIDABLE_STREAK_FIELD_ID);
-    });
-
-    add_menu_page('Formidable Streak', 'Formidable Streak', 'administrator', __FILE__, function () {
-?>
-        <div class="wrap">
-            <h1>Formidable Streak</h1>
-            <div id="dashboard-widgets-wrap">
-                <div id="dashboard-widgets" class="metabox-holder">
-                    <div class="">
-                        <div class="meta-box-sortables">
-                            <div id="dashboard_quick_press" class="postbox ">
-                                <div class="postbox-header">
-                                    <h2 class="hndle ui-sortable-handle">
-                                        <span>Date Field Configuration</span>
-                                    </h2>
-                                </div>
-                                <div class="inside">
-                                    <form method="post" action="options.php">
-                                        <?php settings_fields(FORMIDABLE_STREAK_OPTION_GROUP); ?>
-                                        <?php do_settings_sections(FORMIDABLE_STREAK_OPTION_GROUP); ?>
-                                        <div class="input-text-wrap" id="title-wrap">
-                                            <label for="title">Date Field ID</label>
-                                            <input type="text" name="<?= FORMIDABLE_STREAK_FIELD_ID ?>" value="<?php echo esc_attr(get_option(FORMIDABLE_STREAK_FIELD_ID)); ?>" />
-                                        </div>
-                                        <p>
-                                            <?php submit_button(); ?>
-                                            <br class="clear">
-                                        </p>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="meta-box-sortables">
-                            <div id="" class="postbox">
-                                <div class="postbox-header">
-                                    <h2 class="hndle ui-sortable-handle">
-                                        <span>Available Shortcodes</span>
-                                    </h2>
-                                </div>
-                                <div class="inside">
-                                    <ol>
-                                        <li>[formidable-streak-last][/formidable-streak-last]</li>
-                                        <li>[formidable-streak-best][/formidable-streak-best</li>
-                                        <li>[formidable-streak-achieved-10][/formidable-streak-achieved-10]</li>
-                                        <li>[formidable-streak-achieved-100][/formidable-streak-achieved-100]</li>
-                                    </ol>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="meta-box-sortables">
-                            <div id="" class="postbox">
-                                <div class="postbox-header">
-                                    <h2 class="hndle ui-sortable-handle">
-                                        <span>Streak Views Filter Helper</span>
-                                    </h2>
-                                </div>
-                                <div class="inside">
-                                    <ol>
-                                        <li>User ID >> is equal to >> current_user</li>
-                                        <li>And >> Date >> is greater than or equal to >> [user_meta key=user_streak_first_day]</li>
-                                    </ol>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-<?php
-    }, '');
-});
-
-add_action('frm_after_create_entry', 'formidable_streak_calculate', 30, 2);
-
-function formidable_streak_calculate($entry_id, $form_id)
-{
-    $date_field_id = get_option(FORMIDABLE_STREAK_FIELD_ID);
-    if ('' == $date_field_id) return true;
+add_action('frm_after_create_entry', function ($entry_id, $form_id) {
+    $date_field_id = 999;
 
     global $wpdb;
     $prefix = $wpdb->prefix;
@@ -147,7 +62,7 @@ function formidable_streak_calculate($entry_id, $form_id)
             AND answer.field_id = %d
     ", $entry_id, $date_field_id);
     $submitted_streak = $wpdb->get_row($any_streak_submitted_query);
-    if (is_null($submitted_streak->answer_id)) return true;
+    if (is_null($submitted_streak)) return true;
 
     // CALCULATE LAST STREAK
     $last_streak = 0;
@@ -175,19 +90,19 @@ function formidable_streak_calculate($entry_id, $form_id)
     }
 
     // UPDATE LAST STREAK
-    update_user_meta((int) $submitted_streak->user_id, FORMIDABLE_STREAK_USER_META_LAST_STREAK, $last_streak);
+    update_user_meta((int)$submitted_streak->user_id, "ENTRY_USER_META_LAST_STREAK_999", $last_streak);
 
     // UPDATE BEST STREAK
-    $best_streak = get_user_meta((int)$submitted_streak->user_id, FORMIDABLE_STREAK_USER_META_BEST_STREAK);
+    $best_streak = get_user_meta((int)$submitted_streak->user_id, "ENTRY_USER_META_BEST_STREAK_999");
     $best_streak = isset($best_streak[0]) ? $best_streak[0] : 0;
-    if ((int) $last_streak >= (int) $best_streak) update_user_meta((int)$submitted_streak->user_id, FORMIDABLE_STREAK_USER_META_BEST_STREAK, $last_streak);
+    if ((int) $last_streak >= (int) $best_streak) update_user_meta((int)$submitted_streak->user_id, "ENTRY_USER_META_BEST_STREAK_999", $last_streak);
 
     // UPDATE ACHIEVED-10
-    if (10 === (int)$last_streak) update_user_meta((int)$submitted_streak->user_id, FORMIDABLE_STREAK_USER_META_STREAK_10, 'Achieved');
+    if (10 === (int)$last_streak) update_user_meta((int)$submitted_streak->user_id, "ENTRY_USER_META_STREAK_10_999", 'Achieved');
 
     // UPDATE ACHIEVED-100
-    if (100 === (int)$last_streak) update_user_meta((int)$submitted_streak->user_id, FORMIDABLE_STREAK_USER_META_STREAK_100, 'Achieved');
+    if (100 === (int)$last_streak) update_user_meta((int)$submitted_streak->user_id, "ENTRY_USER_META_STREAK_100_999", 'Achieved');
 
     // UPDATE FIRST DAY OF LAST STREAK
-    update_user_meta((int)$submitted_streak->user_id, FORMIDABLE_STREAK_USER_META_FIRST_DAY_LAST_STREAK, $day->format('Y-m-d'));
-}
+    update_user_meta((int)$submitted_streak->user_id, "ENTRY_USER_META_FIRST_DAY_LAST_STREAK_999", $day->format('Y-m-d'));
+}, 30, 2);
