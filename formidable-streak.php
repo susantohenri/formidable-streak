@@ -113,7 +113,7 @@ function calculate_streak_999($user_id, $entries)
     }
 
     // UPDATE STREAK
-    update_user_meta((int)$user_id, "ENTRY_USER_META_STREAK_999", $streak);
+    update_user_meta((int)$user_id, "ENTRY_USER_META_LAST_STREAK_999", $streak);
 
     // UPDATE BEST STREAK
     $best_streak = get_user_meta((int)$user_id, "ENTRY_USER_META_BEST_STREAK_999");
