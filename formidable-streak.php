@@ -101,31 +101,53 @@ function get_all_entries_999($user_id)
 
 function calculate_streak_999($user_id, $entries)
 {
-    $streak = 0;
+    $today = (new DateTime())->format('Y-m-d');
     $dates = array_map(function ($date) {
-        return $date->answer_value;
+        return new DateTime($date->answer_value);
     }, $entries);
 
-    $day = new DateTime();
-    while (in_array($day->format('Y-m-d'), $dates)) {
-        $streak++;
+    // EXCLUDE FUTURE DATES
+    $dates = array_filter($dates, function ($date) use ($today) {
+        return $date <= new DateTime($today);
+    });
+
+    $first_streak = 0 < count($dates) ? min($dates) : new DateTime($today);
+
+    $streak_group = 0;
+    $streaks = [$streak_group => 0];
+    $day = new DateTime($today);
+    while ($day >= $first_streak) {
+        if (in_array($day, $dates)) $streaks[$streak_group] += 1;
+        else {
+            if (0 != $streaks[$streak_group]) {
+                $streak_group++;
+                $streaks[$streak_group] = 0;
+            }
+        }
         $day->modify('-1 day');
     }
 
     // UPDATE STREAK
-    update_user_meta((int)$user_id, "ENTRY_USER_META_LAST_STREAK_999", $streak);
+    update_user_meta((int)$user_id, "ENTRY_USER_META_LAST_STREAK_999", $streaks[0]);
 
     // UPDATE BEST STREAK
-    $best_streak = get_user_meta((int)$user_id, "ENTRY_USER_META_BEST_STREAK_999");
-    $best_streak = isset($best_streak[0]) ? $best_streak[0] : 0;
-    if ((int) $streak >= (int) $best_streak) update_user_meta((int)$user_id, "ENTRY_USER_META_BEST_STREAK_999", $streak);
+    arsort($streaks);
+    update_user_meta((int)$user_id, "ENTRY_USER_META_BEST_STREAK_999", $streaks[0]);
 
     // UPDATE ACHIEVED-10
-    if (10 === (int)$streak) update_user_meta((int)$user_id, "ENTRY_USER_META_STREAK_10_999", 'Achieved');
+    $streak_10_exists = array_filter($streaks, function ($streak) {
+        return $streak >= 10;
+    });
+    if (count($streak_10_exists) > 0) update_user_meta((int)$user_id, "ENTRY_USER_META_STREAK_10_999", 'Achieved');
+    else update_user_meta((int)$user_id, "ENTRY_USER_META_STREAK_10_999", 'Not achieved yet');
 
     // UPDATE ACHIEVED-100
-    if (100 === (int)$streak) update_user_meta((int)$user_id, "ENTRY_USER_META_STREAK_100_999", 'Achieved');
+    $streak_100_exists = array_filter($streaks, function ($streak) {
+        return $streak >= 100;
+    });
+    if (count($streak_100_exists) > 0) update_user_meta((int)$user_id, "ENTRY_USER_META_STREAK_100_999", 'Achieved');
+    else update_user_meta((int)$user_id, "ENTRY_USER_META_STREAK_100_999", 'Not achieved yet');
 
     // UPDATE FIRST DAY OF LAST STREAK
-    update_user_meta((int)$user_id, "ENTRY_USER_META_FIRST_DAY_LAST_STREAK_999", $day->format('Y-m-d'));
+    update_user_meta((int)$user_id, "ENTRY_USER_META_FIRST_DAY_LAST_STREAK_999", $first_streak->format('Y-m-d'));
 }
